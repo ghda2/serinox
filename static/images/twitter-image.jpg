@@ -1,0 +1,8 @@
+/* Placeholder para imagem Twitter */
+/* Esta é uma imagem de placeholder em formato SVG */
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <rect width="1200" height="600" fill="#2196F3"/>
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="48" fill="white">
+    Imagem Twitter Placeholder
+  </text>
+</svg>

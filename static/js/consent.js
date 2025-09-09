@@ -1,23 +1,23 @@
-// Cookie Consent Script
+// Script básico para consentimento de cookies
 document.addEventListener('DOMContentLoaded', function() {
-    const consentBanner = document.getElementById('cookie-consent-banner');
-    const acceptBtn = document.getElementById('accept-cookies');
-    const declineBtn = document.getElementById('decline-cookies');
-
-    // Check if consent already given
-    if (!localStorage.getItem('cookieConsent')) {
-        consentBanner.style.display = 'block';
+    const banner = document.getElementById('cookie-consent-banner');
+    const acceptButton = document.getElementById('accept-cookies');
+    const declineButton = document.getElementById('decline-cookies');
+    
+    // Verificar se o usuário já tomou uma decisão sobre os cookies
+    const consentGiven = localStorage.getItem('cookieConsent');
+    
+    if (!consentGiven) {
+        banner.style.display = 'block';
     }
-
-    acceptBtn.addEventListener('click', function() {
+    
+    acceptButton.addEventListener('click', function() {
         localStorage.setItem('cookieConsent', 'accepted');
-        consentBanner.style.display = 'none';
-        // Enable analytics or other cookies here
+        banner.style.display = 'none';
     });
-
-    declineBtn.addEventListener('click', function() {
+    
+    declineButton.addEventListener('click', function() {
         localStorage.setItem('cookieConsent', 'declined');
-        consentBanner.style.display = 'none';
-        // Disable non-essential cookies
+        banner.style.display = 'none';
     });
 });

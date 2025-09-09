@@ -15,14 +15,14 @@
     <meta property="og:url" content="{% block og_url %}{{ request.url }}{% endblock %}">
     <meta property="og:title" content="{% block og_title %}Campanha dos Dora{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Descrição da campanha dos Dora para engajar a comunidade.{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}{{ url_for('static', filename='images/og-image.jpg', _external=True) }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ url_for('static', path='images/og-image.jpg') }}{% endblock %}">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{% block twitter_url %}{{ request.url }}{% endblock %}">
-    <meta property="twitter:title" content="{% block og_title %}Campanha dos Dora{% endblock %}">
-    <meta property="twitter:description" content="{% block og_description %}Descrição da campanha dos Dora para engajar a comunidade.{% endblock %}">
-    <meta property="twitter:image" content="{% block twitter_image %}{{ url_for('static', filename='images/twitter-image.jpg', _external=True) }}{% endblock %}">
+    <meta property="twitter:title" content="{% block twitter_title %}Campanha dos Dora{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Descrição da campanha dos Dora para engajar a comunidade.{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}{{ url_for('static', path='images/twitter-image.jpg') }}{% endblock %}">
     
     <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
 </head>
@@ -36,7 +36,6 @@
         <button id="decline-cookies" style="background: #f44336; color: white; border: none; padding: 10px 20px; margin: 5px; cursor: pointer;">Recusar</button>
     </div>
     
-    <script src="{{ url_for('static', path='js/script.js') }}"></script>
     <script src="{{ url_for('static', path='js/consent.js') }}"></script>
 </body>
 </html>
