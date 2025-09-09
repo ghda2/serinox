@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Landpage 1{% endblock %}
+
+{% block content %}
+<h1>Landpage 1</h1>
+<form action="/submit" method="post">
+    <input type="hidden" name="landpage" value="landpage1">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}
