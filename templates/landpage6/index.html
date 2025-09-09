@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Landpage 6 - Página de Teste de Tracking{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <h1>LAND 6 - TESTE DE TRACKING</h1>
+    <p class="hero-subtitle">Página especial para testar recursos avançados de tracking</p>
+</div>
+
+<div class="features-section">
+    <h2>Elementos de Tracking</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <h3>🎯 CTA Tracker</h3>
+            <p>Elementos para testar tracking de cliques</p>
+            <button class="btn-primary cta" id="cta-button-1">CTA Principal</button>
+            <button class="btn-secondary cta" id="cta-button-2">CTA Secundário</button>
+        </div>
+        <div class="feature-card">
+            <h3>📊 Scroll Tracking</h3>
+            <p>Seções para testar tracking de scroll</p>
+            <div style="height: 200px; background: #e9ecef; margin: 10px 0; display: flex; align-items: center; justify-content: center;">
+                Conteúdo para scroll
+            </div>
+        </div>
+        <div class="feature-card">
+            <h3>⏱️ Tempo de Permanência</h3>
+            <p>Tracking de tempo em diferentes seções</p>
+            <div id="timer-section" style="padding: 20px; background: #f8f9fa; border-radius: 5px;">
+                <p>Tempo nesta seção: <span id="section-timer">0</span> segundos</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section id="scroll-test-section" style="padding: 50px 20px; background: #f8f9fa;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <h2>Seção Longa para Teste de Scroll</h2>
+        <p>Esta seção é longa propositalmente para testar o tracking de scroll detalhado.</p>
+        
+        <div style="height: 300px; background: #e9ecef; margin: 20px 0; display: flex; align-items: center; justify-content: center;">
+            Conteúdo no meio da seção
+        </div>
+        
+        <p>Texto para preencher espaço e permitir mais scroll.</p>
+        
+        <div style="height: 300px; background: #dee2e6; margin: 20px 0; display: flex; align-items: center; justify-content: center;">
+            Mais conteúdo para scroll
+        </div>
+        
+        <p>Mais texto para garantir que o usuário precise scrollar bastante.</p>
+        
+        <div style="height: 300px; background: #ced4da; margin: 20px 0; display: flex; align-items: center; justify-content: center;">
+            Conteúdo final da seção
+        </div>
+    </div>
+</section>
+
+<section id="interactive-section" style="padding: 50px 20px;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <h2>Elementos Interativos</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 30px;">
+            <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3>Formulário Simples</h3>
+                <form id="simple-form">
+                    <div style="margin-bottom: 15px;">
+                        <label for="simple-name" style="display: block; margin-bottom: 5px;">Nome:</label>
+                        <input type="text" id="simple-name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label for="simple-email" style="display: block; margin-bottom: 5px;">Email:</label>
+                        <input type="email" id="simple-email" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <button type="submit" class="btn-primary">Enviar</button>
+                </form>
+            </div>
+            
+            <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3>Botões de Ação</h3>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <button class="btn-primary" id="action-button-1">Ação 1</button>
+                    <button class="btn-secondary" id="action-button-2">Ação 2</button>
+                    <button class="btn-primary" id="action-button-3">Ação 3</button>
+                </div>
+            </div>
+            
+            <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3>Links Externos</h3>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <a href="https://google.com" target="_blank" class="btn-secondary" style="text-align: center; text-decoration: none;">Google</a>
+                    <a href="https://github.com" target="_blank" class="btn-secondary" style="text-align: center; text-decoration: none;">GitHub</a>
+                    <a href="https://stackoverflow.com" target="_blank" class="btn-secondary" style="text-align: center; text-decoration: none;">Stack Overflow</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Script para testar tracking avançado
+document.addEventListener('DOMContentLoaded', function() {
+    // Timer para seção específica
+    var timerElement = document.getElementById('section-timer');
+    var startTime = Date.now();
+    
+    function updateTimer() {
+        var elapsed = Math.floor((Date.now() - startTime) / 1000);
+        timerElement.textContent = elapsed;
+    }
+    
+    setInterval(updateTimer, 1000);
+    
+    // Adicionar eventos personalizados para elementos específicos
+    document.getElementById('cta-button-1').addEventListener('click', function() {
+        if (typeof customEvents !== 'undefined') {
+            customEvents.push({
+                type: 'special_cta_click',
+                element: 'cta-button-1',
+                time: Date.now() - startTime
+            });
+        }
+    });
+    
+    document.getElementById('cta-button-2').addEventListener('click', function() {
+        if (typeof customEvents !== 'undefined') {
+            customEvents.push({
+                type: 'special_cta_click',
+                element: 'cta-button-2',
+                time: Date.now() - startTime
+            });
+        }
+    });
+    
+    // Formulário simples
+    document.getElementById('simple-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (typeof customEvents !== 'undefined') {
+            customEvents.push({
+                type: 'form_submission',
+                form: 'simple-form',
+                time: Date.now() - startTime
+            });
+        }
+        alert('Formulário enviado! (Apenas para teste)');
+    });
+    
+    // Botões de ação
+    document.getElementById('action-button-1').addEventListener('click', function() {
+        if (typeof customEvents !== 'undefined') {
+            customEvents.push({
+                type: 'action_button_click',
+                button: 'action-button-1',
+                time: Date.now() - startTime
+            });
+        }
+    });
+    
+    document.getElementById('action-button-2').addEventListener('click', function() {
+        if (typeof customEvents !== 'undefined') {
+            customEvents.push({
+                type: 'action_button_click',
+                button: 'action-button-2',
+                time: Date.now() - startTime
+            });
+        }
+    });
+    
+    document.getElementById('action-button-3').addEventListener('click', function() {
+        if (typeof customEvents !== 'undefined') {
+            customEvents.push({
+                type: 'action_button_click',
+                button: 'action-button-3',
+                time: Date.now() - startTime
+            });
+        }
+    });
+});
+</script>
+
+<style>
+/* Estilos específicos para esta página */
+#scroll-test-section h2,
+#interactive-section h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+</style>
+{% endblock %}

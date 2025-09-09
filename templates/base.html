@@ -30,12 +30,239 @@
     {% block content %}{% endblock %}
     
     <!-- Cookie Consent Banner -->
-    <div id="cookie-consent-banner" style="display: none; position: fixed; bottom: 0; width: 100%; background: #333; color: #fff; padding: 10px; text-align: center; z-index: 1000;">
-        <p>Este site utiliza cookies para melhorar sua experiência. Ao continuar navegando, você concorda com o uso de cookies conforme nossa <a href="/politica-de-privacidade" style="color: #fff;">Política de Privacidade</a>.</p>
-        <button id="accept-cookies" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; margin: 5px; cursor: pointer;">Aceitar</button>
-        <button id="decline-cookies" style="background: #f44336; color: white; border: none; padding: 10px 20px; margin: 5px; cursor: pointer;">Recusar</button>
+    <div id="cookie-consent-banner" class="cookie-consent-banner">
+        <p class="cookie-consent-text">Este site utiliza cookies para melhorar sua experiência. Ao continuar navegando, você concorda com o uso de cookies conforme nossa <a href="/politica-de-privacidade" class="cookie-consent-link">Política de Privacidade</a>.</p>
+        <div class="cookie-consent-buttons">
+            <button id="accept-cookies" class="cookie-btn accept-btn">Aceitar</button>
+            <button id="decline-cookies" class="cookie-btn decline-btn">Recusar</button>
+        </div>
     </div>
     
     <script src="{{ url_for('static', path='js/consent.js') }}"></script>
+    <script>
+        // Tracking script
+        var visitId = {{ visit_id | default(None) | tojson }};
+        var startTime = Date.now();
+        var firstClickTime = null;
+        var clickCount = 0;
+        var ctaClickCount = 0;
+        var maxScroll = 0;
+        var scrollPoints = [];
+        var sectionTimes = {};
+        var customEvents = [];
+        var javascriptErrors = [];
+        var pageLoadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+        var userRegion = '';
+        var internetProvider = '';
+        var connectionType = '';
+
+        // Capturar erros de JavaScript
+        window.addEventListener('error', function(e) {
+            javascriptErrors.push({
+                message: e.message,
+                filename: e.filename,
+                lineno: e.lineno,
+                colno: e.colno,
+                time: Date.now() - startTime
+            });
+        });
+
+        // Tentar obter geolocalização do usuário
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    // Em produção, você enviaria as coordenadas para um serviço de geocodificação
+                    // Para este exemplo, vamos apenas registrar que temos permissão
+                    userRegion = 'Geolocation available';
+                    
+                    // Registrar evento personalizado
+                    customEvents.push({
+                        type: 'geolocation_allowed',
+                        time: Date.now() - startTime
+                    });
+                }, function(error) {
+                    // Usuário negou permissão ou não está disponível
+                    userRegion = 'Geolocation denied or unavailable';
+                    
+                    // Registrar erro de geolocalização
+                    customEvents.push({
+                        type: 'geolocation_error',
+                        code: error.code,
+                        message: error.message,
+                        time: Date.now() - startTime
+                    });
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 300000 // 5 minutos
+                });
+            } else {
+                userRegion = 'Geolocation not supported';
+            }
+        }
+
+        // Detectar tipo de conexão
+        function getConnectionInfo() {
+            if (navigator.connection) {
+                var connection = navigator.connection;
+                connectionType = connection.effectiveType || 'unknown';
+                
+                // Registrar informações de conexão
+                customEvents.push({
+                    type: 'connection_info',
+                    effectiveType: connection.effectiveType,
+                    downlink: connection.downlink,
+                    rtt: connection.rtt,
+                    time: Date.now() - startTime
+                });
+            } else {
+                // Detectar tipo de conexão baseado no user agent
+                var userAgent = navigator.userAgent;
+                if (userAgent.includes('Mobile') || userAgent.includes('Android') || userAgent.includes('iPhone')) {
+                    connectionType = 'mobile';
+                } else {
+                    connectionType = 'broadband';
+                }
+            }
+        }
+
+        if (visitId !== null) {
+            document.addEventListener('DOMContentLoaded', function() {
+                // Enviar resolução da tela
+                var resolution = screen.width + 'x' + screen.height;
+                var header = new Headers();
+                header.append('screen-resolution', resolution);
+                
+                // Obter informações de conexão
+                getConnectionInfo();
+                
+                // Solicitar geolocalização
+                getUserLocation();
+                
+                // Track clicks
+                document.addEventListener('click', function(e) {
+                    clickCount++;
+                    
+                    // Registrar tempo até o primeiro clique
+                    if (firstClickTime === null) {
+                        firstClickTime = Date.now() - startTime;
+                    }
+                    
+                    // Verificar se é um clique em CTA (botões, links importantes)
+                    var target = e.target;
+                    if (target.tagName === 'BUTTON' || 
+                        (target.tagName === 'A' && target.href) ||
+                        target.classList.contains('btn') ||
+                        target.classList.contains('cta') ||
+                        target.type === 'submit') {
+                        ctaClickCount++;
+                        
+                        // Registrar evento personalizado
+                        customEvents.push({
+                            type: 'cta_click',
+                            element: target.tagName,
+                            text: target.textContent.trim().substring(0, 50),
+                            time: Date.now() - startTime
+                        });
+                    }
+                });
+
+                // Track scroll detalhado
+                window.addEventListener('scroll', function() {
+                    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    var windowHeight = window.innerHeight;
+                    var docHeight = Math.max(
+                        document.body.scrollHeight, document.documentElement.scrollHeight,
+                        document.body.offsetHeight, document.documentElement.offsetHeight,
+                        document.body.clientHeight, document.documentElement.clientHeight
+                    );
+                    var scrollPercent = Math.round((scrollTop / (docHeight - windowHeight)) * 100);
+                    if (scrollPercent > maxScroll) {
+                        maxScroll = scrollPercent;
+                    }
+                    
+                    // Registrar pontos de scroll a cada 10%
+                    var scrollPoint = Math.floor(scrollPercent / 10) * 10;
+                    if (scrollPoints.indexOf(scrollPoint) === -1) {
+                        scrollPoints.push(scrollPoint);
+                        customEvents.push({
+                            type: 'scroll_reach',
+                            percent: scrollPoint,
+                            time: Date.now() - startTime
+                        });
+                    }
+                });
+
+                // Track tempo em seções específicas
+                var sections = document.querySelectorAll('section, .hero-section, .features-section, .content-section, .pricing-section, .contact-section, .testimonials-section, .newsletter-section, .faq-section');
+                var observer = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        var sectionId = entry.target.id || entry.target.className.split(' ')[0];
+                        if (entry.isIntersecting) {
+                            // Seção entrou na viewport
+                            if (!sectionTimes[sectionId]) {
+                                sectionTimes[sectionId] = {start: Date.now(), total: 0};
+                            } else {
+                                sectionTimes[sectionId].start = Date.now();
+                            }
+                        } else {
+                            // Seção saiu da viewport
+                            if (sectionTimes[sectionId] && sectionTimes[sectionId].start) {
+                                sectionTimes[sectionId].total += Date.now() - sectionTimes[sectionId].start;
+                                sectionTimes[sectionId].start = null;
+                            }
+                        }
+                    });
+                }, {threshold: 0.5}); // 50% da seção visível
+
+                sections.forEach(function(section) {
+                    observer.observe(section);
+                });
+            });
+
+            window.addEventListener('beforeunload', function() {
+                var timeSpent = Math.now() - startTime;
+                var timeUntilFirstClick = firstClickTime;
+                
+                // Finalizar tempo em seções
+                for (var sectionId in sectionTimes) {
+                    if (sectionTimes[sectionId].start) {
+                        sectionTimes[sectionId].total += Date.now() - sectionTimes[sectionId].start;
+                    }
+                    // Converter para segundos
+                    sectionTimes[sectionId] = Math.round(sectionTimes[sectionId].total / 1000);
+                }
+                
+                // Get URL params for origem, campanha
+                var urlParams = new URLSearchParams(window.location.search);
+                var origem = urlParams.get('utm_source') || 'direct';
+                var campanha = urlParams.get('utm_campaign') || '';
+                var idioma = navigator.language || '';
+                var regiao = userRegion || '';
+
+                // Send data
+                var formData = new FormData();
+                formData.append('visit_id', visitId);
+                formData.append('tempo_na_pagina', Math.round(timeSpent / 1000));
+                formData.append('cliques', clickCount);
+                formData.append('scroll_percent', maxScroll);
+                formData.append('origem', origem);
+                formData.append('campanha', campanha);
+                formData.append('idioma', idioma);
+                formData.append('regiao', regiao);
+                formData.append('cliques_em_cta', ctaClickCount);
+                formData.append('tempo_ate_primeiro_clique', timeUntilFirstClick ? Math.round(timeUntilFirstClick / 1000) : 0);
+                formData.append('scroll_detalhado', JSON.stringify(scrollPoints));
+                formData.append('tempo_em_secoes', JSON.stringify(sectionTimes));
+                formData.append('eventos_personalizados', JSON.stringify(customEvents));
+                formData.append('erros_javascript', javascriptErrors.length > 0 ? JSON.stringify(javascriptErrors) : '');
+                formData.append('tempo_carregamento_pagina', pageLoadTime);
+                formData.append('provedor_internet', internetProvider);
+                formData.append('tipo_conexao', connectionType);
+
+                navigator.sendBeacon('/update_visit', formData);
+            });
+        }
+    </script>
 </body>
 </html>
